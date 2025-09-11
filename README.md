@@ -19,7 +19,6 @@ email_summarizer/
 │   │   ├── graph/             # 智能体图结构、状态、传播、条件逻辑
 │   │   ├── manager/           # 智能体管理器
 │   │   ├── agent_utils.py     # 智能体工具函数
-│   │   └── multiagent.py      # 多智能体入口
 │   ├── tasks/                 # 邮件抓取、摘要等任务
 │   ├── utils/                 # 工具与 Exchange 客户端
 │   └── web/                   # Web 入口（Streamlit）
@@ -34,7 +33,6 @@ email_summarizer/
 - `analysts/`：定义不同分析师（如 briefing_analyst、status_update_analyst、action_items_analyst），每个分析师聚焦不同邮件内容维度。
 - `graph/`：核心为 `EmailSummarizerAgentsGraph`，负责智能体间的信息流转、状态管理、条件控制等。
 - `manager/`：如 `email_summary_manager.py`，用于统一调度和管理摘要流程。
-- `multiagent.py`：多智能体摘要主入口，支持批量邮件摘要。
 - `agent_utils.py`：通用工具函数。
 
 ## Web 入口
@@ -53,10 +51,32 @@ email_summarizer/
 
 ### 安装依赖
 
+本项目使用 [uv](https://github.com/astral-sh/uv) 进行依赖管理，推荐全程使用 uv 操作依赖。
+
+#### 安装 uv（如未安装）
+
 ```bash
-pip install -r requirements.txt
-# 或使用 pyproject.toml 支持的工具（如 poetry、pip）
+pip install uv
+# 或参考官方文档：https://github.com/astral-sh/uv
 ```
+
+#### 安装依赖
+
+```bash
+uv pip install -r requirements.txt
+# 或直接使用 pyproject.toml/uv.lock
+uv pip install -r requirements.txt --use-uv
+```
+
+#### 常用 uv 命令
+
+- 安装依赖：`uv pip install -r requirements.txt`
+- 添加依赖：`uv pip install 包名`
+- 移除依赖：`uv pip uninstall 包名`
+- 更新锁文件：`uv pip freeze > requirements.txt && uv pip compile`
+- 生成/更新 uv.lock：`uv pip compile`
+
+详细用法见 [uv 官方文档](https://github.com/astral-sh/uv)。
 
 ### 启动 Web 界面
 
@@ -66,7 +86,10 @@ streamlit run email_summarizer/app/web/email_summarizer_web.py
 
 ### 邮箱配置
 
-请在 `email_summarizer/.env` 中配置 Exchange 邮箱相关环境变量，参考 exchangelib 官方文档。
+请根据项目根目录下的 `email_summarizer/.env.example` 文件，复制为 `email_summarizer/.env` 并填写你自己的 Exchange 邮箱、Azure OpenAI、Celery 等相关环境变量。  
+**注意：请勿提交包含敏感信息的 .env 文件到版本库。**
+
+各字段说明及示例见 `.env.example`，如需详细配置可参考 [exchangelib 官方文档](https://ecederstrand.github.io/exchangelib/) 及 Azure OpenAI 文档。
 
 ## 依赖
 
