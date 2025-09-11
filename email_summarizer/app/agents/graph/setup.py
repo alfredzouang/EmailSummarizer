@@ -91,19 +91,26 @@ class GraphSetup:
         workflow.add_node("action_items", create_action_items_analyst(
                 self.quick_thinking_llm, self.toolkit
             ))
-        workflow.add_node("clear_action_items", create_msg_delete())
-        workflow.add_node("clear_briefing", create_msg_delete())
-        workflow.add_node("clear_status_updates", create_msg_delete())
+        # workflow.add_node("clear_action_items", create_msg_delete())
+        # workflow.add_node("clear_briefing", create_msg_delete())
+        # workflow.add_node("clear_status_updates", create_msg_delete())
         # Add other nodes
         workflow.add_node("email_summary_manager", email_summary_manager_node)
 
         workflow.add_edge(START, "briefing")
-        workflow.add_edge("briefing", "clear_briefing")
-        workflow.add_edge("status_updates", "clear_status_updates")
-        workflow.add_edge("clear_briefing", "status_updates")
-        workflow.add_edge("clear_status_updates", "action_items")
-        workflow.add_edge("action_items", "clear_action_items")
-        workflow.add_edge("clear_action_items", "email_summary_manager")
+        workflow.add_edge(START, "status_updates")
+        workflow.add_edge(START, "action_items")
+        # workflow.add_edge("briefing", "clear_briefing")
+        # workflow.add_edge("status_updates", "clear_status_updates")
+        # workflow.add_edge("action_items", "clear_action_items")
+        # workflow.add_edge("clear_briefing", "email_summary_manager")
+        # workflow.add_edge("clear_status_updates", "email_summary_manager")
+        # workflow.add_edge("clear_action_items", "email_summary_manager")
+
+        workflow.add_edge("briefing", "email_summary_manager")
+        workflow.add_edge("status_updates", "email_summary_manager")
+        workflow.add_edge("action_items", "email_summary_manager")
+
         workflow.add_edge("email_summary_manager", END)
 
         # Compile and return
