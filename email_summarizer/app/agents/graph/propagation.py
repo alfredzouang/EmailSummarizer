@@ -1,4 +1,4 @@
-# TradingAgents/graph/propagation.py
+# Email Summarizer/app/agents/graph/propagation.py
 
 from typing import Dict, Any
 

@@ -1,4 +1,4 @@
-# TradingAgents/graph/conditional_logic.py
+# Email Summarizer/app/agents/graph/conditional_logic.py
 
 from email_summarizer.app.agents.graph.agent_states import AgentState
 
