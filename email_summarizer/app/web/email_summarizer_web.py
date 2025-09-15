@@ -8,6 +8,8 @@ import time
 from email_summarizer.app.utils.exchange_client import ExchangeClient
 from email_summarizer.app.agents.graph.email_summarizer_graph import EmailSummarizerAgentsGraph
 
+from email_summarizer.app.utils.config_manager import ConfigManager
+
 st.set_page_config(layout="wide")
 st.title("Email Summarizer Demo")
 
@@ -51,7 +53,14 @@ def summarize_emails():
         return
     start_time = time.perf_counter()
     email_summarization_date = datetime.date.today().strftime("%Y-%m-%d")
-    agents = EmailSummarizerAgentsGraph(selected_analysts=["briefing_analyst", "status_updates"])
+
+    config_manager = ConfigManager()
+    config = config_manager.get_config()
+
+    agents = EmailSummarizerAgentsGraph(
+        selected_analysts=["briefing_analyst", "status_updates"],
+        config=config
+    )
     final_state = agents.propagate(emails, email_summarization_date)
     st.session_state["summary_report"] = final_state.get("email_summary_report", "")
     end_time = time.perf_counter()

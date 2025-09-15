@@ -18,6 +18,7 @@ from email_summarizer.app.agents.graph.agent_states import (
     ActionItemsState,
 )
 
+from email_summarizer.app.agents.config.default_config import DEFAULT_CONFIG
 from .conditional_logic import ConditionalLogic
 from .setup import GraphSetup
 from .propagation import Propagator
@@ -32,7 +33,7 @@ AZURE_OPENAI_QUICK_THINKING_DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_QUICK_THIN
 AZURE_OPENAI_API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION", "2024-12-01-preview")
 
 class EmailSummarizerAgentsGraph:
-    """Main class that orchestrates the trading agents framework."""
+    """Main class that orchestrates the email summarization agents framework."""
 
     def __init__(
         self,
@@ -40,25 +41,44 @@ class EmailSummarizerAgentsGraph:
         config: Dict[str, Any] = None,
         debug: bool = False,
     ):
-        """Initialize the trading agents graph and components.
+        """Initialize the email summarization agents graph and components.
 
         Args:
             selected_analysts: List of analyst types to include
         """
-        self.config = config or {}
+        self.config = config or DEFAULT_CONFIG
         self.debug = debug
-        self.deep_thinking_llm = AzureChatOpenAI(
-            azure_deployment=AZURE_OPENAI_DEEP_THINKING_DEPLOYMENT_NAME,
-            azure_endpoint=AZURE_OPENAI_ENDPOINT,
-            api_version=AZURE_OPENAI_API_VERSION,
-            api_key=AZURE_OPENAI_API_KEY
-        )
-        self.quick_thinking_llm = AzureChatOpenAI(
-            azure_deployment=AZURE_OPENAI_QUICK_THINKING_DEPLOYMENT_NAME,
-            azure_endpoint=AZURE_OPENAI_ENDPOINT,
-            api_version=AZURE_OPENAI_API_VERSION,
-            api_key=AZURE_OPENAI_API_KEY
-        )
+        provider = str(self.config.get("llm_provider", "azure")).lower()
+        logger.info(f"🌐 [CONFIG] Using provider: {provider}")
+
+         # Initialize LLMs
+        if provider == "azureopenai":
+            logger.info("🌐 [CONFIG] Initializing Azure OpenAI LLMs")
+            self.deep_thinking_llm = AzureChatOpenAI(
+                azure_deployment=self.config.get("deep_think_llm", AZURE_OPENAI_DEEP_THINKING_DEPLOYMENT_NAME),
+                azure_endpoint=self.config.get("backend_url", AZURE_OPENAI_ENDPOINT),
+                api_version=self.config.get("api_version", AZURE_OPENAI_API_VERSION),
+                api_key=AZURE_OPENAI_API_KEY
+            )
+            self.quick_thinking_llm = AzureChatOpenAI(
+                azure_deployment=self.config.get("quick_think_llm", AZURE_OPENAI_QUICK_THINKING_DEPLOYMENT_NAME),
+                azure_endpoint=self.config.get("backend_url", AZURE_OPENAI_ENDPOINT),
+                api_version=self.config.get("api_version", AZURE_OPENAI_API_VERSION),
+                api_key=AZURE_OPENAI_API_KEY
+            )
+        elif provider in ("openai", "ollama", "openrouter"):
+            logger.info(f"🌐 [CONFIG] Initializing {provider} LLMs")
+            self.deep_thinking_llm = ChatOpenAI(
+                model_name=self.config.get("deep_think_llm", "gpt-4"),
+                base_url=self.config.get("backend_url", None),
+                temperature=self.config.get("temperature", 0.0),
+            )
+            self.quick_thinking_llm = ChatOpenAI(
+                model_name=self.config.get("quick_think_llm", "gpt-3.5-turbo"),
+                base_url=self.config.get("backend_url", None),
+                temperature=self.config.get("temperature", 0.0),
+            )
+            
         # self.toolkit = Toolkit(config=self.config)
 
         self.tool_nodes = self._create_tool_nodes()
