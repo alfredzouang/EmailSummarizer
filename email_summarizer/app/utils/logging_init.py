@@ -12,6 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional, Union
 import json
+import toml
 
 # 注意：这里不能导入自己，会造成循环导入
 # 在日志系统初始化前，使用标准库自举日志器，避免未定义引用

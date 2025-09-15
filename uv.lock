@@ -619,6 +619,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "pyyaml" },
     { name = "streamlit" },
+    { name = "toml" },
     { name = "watchdog" },
 ]
 
@@ -636,6 +637,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.1.1" },
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "streamlit", specifier = ">=1.49.1" },
+    { name = "toml", specifier = ">=0.10.2" },
     { name = "watchdog", specifier = ">=6.0.0" },
 ]
 
