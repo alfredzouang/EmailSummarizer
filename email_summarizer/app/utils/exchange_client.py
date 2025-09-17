@@ -68,7 +68,7 @@ class ExchangeClient:
         Fetch emails received in the last 24 hours.
         """
         now = datetime.now(self.tz)
-        start = now - timedelta(hours=72)
+        start = now - timedelta(hours=24)
         return self.fetch_emails(since=start, until=now)
 
     def fetch_all_emails(self) -> List[dict]:

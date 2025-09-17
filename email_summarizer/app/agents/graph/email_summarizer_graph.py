@@ -38,7 +38,12 @@ class EmailSummarizerAgentsGraph:
         Args:
             selected_analysts: List of analyst types to include
         """
-        self.config = config or DEFAULT_CONFIG
+
+        if config is None:
+            from email_summarizer.app.utils.config_manager import ConfigManager
+            config = ConfigManager().get_config()
+        self.config = config
+
         self.debug = debug
         provider = Config.LLM_PROVIDER.lower()
         logger.info(f"🌐 [CONFIG] Using provider: {provider}")

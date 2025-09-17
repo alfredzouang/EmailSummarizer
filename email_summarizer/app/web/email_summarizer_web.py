@@ -22,7 +22,7 @@ st.sidebar.header("Email List")
 target_email = st.sidebar.text_input(
     "Target mailbox (UPN)",
     value=(st.session_state.get("target_email")),
-    help="输入要读取的目标邮箱，例如 alfredzou@thebig1.biz"
+    help="输入要读取的目标邮箱，例如 user@example.com"
 )
 
 if "emails" not in st.session_state:
@@ -30,8 +30,8 @@ if "emails" not in st.session_state:
 
 def fetch_emails(target_email: str):
     client = ExchangeClient(target_email=target_email)
-    emails = client.fetch_all_emails()
-    # emials = client.fetch_today_emails(target_mailbox=target_email) # TODO: switch to today's emails only
+    # emails = client.fetch_all_emails()
+    emails = client.fetch_today_emails() # TODO: switch to today's emails only
     st.session_state["emails"] = emails
 
 if st.sidebar.button("Fetch Today's Emails"):
