@@ -1,4 +1,4 @@
-from exchangelib import Credentials, Account, DELEGATE, Configuration, Message, EWSTimeZone, UTC
+from exchangelib import Credentials, Account, DELEGATE, Configuration, Message, EWSTimeZone, UTC, IMPERSONATION
 from email_summarizer.app.config import Config
 from datetime import datetime, timedelta
 from typing import List
@@ -14,7 +14,7 @@ class ExchangeClient:
             primary_smtp_address=target_email,
             config=config,
             autodiscover=False,
-            access_type=DELEGATE
+            access_type=IMPERSONATION
         )
         # Use the account's default timezone if available, else UTC
         self.tz = getattr(self.account, 'default_timezone', UTC)
