@@ -28,9 +28,19 @@ class ExchangeClient:
         if until is None:
             until = datetime.now(self.tz)
         if since.tzinfo is None:
-            since = self.tz.localize(since)
+            # Create a new datetime with the timezone information
+            since = datetime(
+                since.year, since.month, since.day,
+                since.hour, since.minute, since.second,
+                since.microsecond, tzinfo=self.tz
+            )
         if until.tzinfo is None:
-            until = self.tz.localize(until)
+            # Create a new datetime with the timezone information
+            until = datetime(
+                until.year, until.month, until.day,
+                until.hour, until.minute, until.second,
+                until.microsecond, tzinfo=self.tz
+            )
         inbox = self.account.inbox
         qs = inbox.filter(datetime_received__range=(since, until)).order_by('-datetime_received')
         emails = []
