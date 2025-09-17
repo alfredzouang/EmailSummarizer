@@ -4,14 +4,14 @@ from datetime import datetime, timedelta
 from typing import List
 from markitdown import MarkItDown
 class ExchangeClient:
-    def __init__(self):
+    def __init__(self, target_email: str):
         creds = Credentials(
             username=Config.EXCHANGE_USERNAME,
             password=Config.EXCHANGE_PASSWORD
         )
         config = Configuration(server=Config.EXCHANGE_SERVER, credentials=creds)
         self.account = Account(
-            primary_smtp_address=Config.EXCHANGE_EMAIL,
+            primary_smtp_address=target_email,
             config=config,
             autodiscover=False,
             access_type=DELEGATE
