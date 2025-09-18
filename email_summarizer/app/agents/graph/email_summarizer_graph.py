@@ -167,5 +167,18 @@ class EmailSummarizerAgentsGraph:
             final_state = self.graph.invoke(init_agent_state, **args)
 
         self.curr_state = final_state
-        final_report = self._clean_final_report_format(final_state["email_summary_report"])
-        return final_report
+
+        # Ensure we return a dict-compatible state for upstream callers
+        if isinstance(final_state, dict):
+            report = final_state.get("email_summary_report", "")
+            if not isinstance(report, str):
+                report = str(report)
+            cleaned = self._clean_final_report_format(report)
+            final_state["email_summary_report"] = cleaned
+            return final_state
+        elif isinstance(final_state, str):
+            cleaned = self._clean_final_report_format(final_state)
+            return {"email_summary_report": cleaned}
+        else:
+            logger.error(f"Unexpected final_state type from graph: {type(final_state)}; value: {final_state}")
+            raise TypeError(f"Unexpected final_state type from graph: {type(final_state)}")
