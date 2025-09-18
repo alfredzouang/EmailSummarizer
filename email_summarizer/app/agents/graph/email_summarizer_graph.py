@@ -23,6 +23,7 @@ from email_summarizer.app.config import Config
 from .conditional_logic import ConditionalLogic
 from .setup import GraphSetup
 from .propagation import Propagator
+import re
 
 class EmailSummarizerAgentsGraph:
     """Main class that orchestrates the email summarization agents framework."""
@@ -130,6 +131,16 @@ class EmailSummarizerAgentsGraph:
             ),
         }
 
+    def _clean_final_report_format(self, report: str) -> str:
+        """Clean and format the final report string. Remove <think></think> tags.
+
+        Args:
+            report: Raw report string
+        """
+        regex = r"<think>[\s\S]*?<\/think>"
+        cleaned_report = re.sub(regex, "", report).strip()
+        return cleaned_report
+    
     def propagate(self, emails, email_summarization_date):
         logger.debug(f"🔍 [GRAPH DEBUG] ===== EmailSummarizer.propagate 接收参数 =====")
         logger.debug(f"🔍 [GRAPH DEBUG] 接收到的emails: '{emails}' (类型: {type(emails)})")
@@ -156,4 +167,5 @@ class EmailSummarizerAgentsGraph:
             final_state = self.graph.invoke(init_agent_state, **args)
 
         self.curr_state = final_state
-        return final_state
+        final_report = self._clean_final_report_format(final_state["email_summary_report"])
+        return final_report
