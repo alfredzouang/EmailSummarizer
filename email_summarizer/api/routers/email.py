@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
+from datetime import datetime
 
 from email_summarizer.app.utils.exchange_client import ExchangeClient
 from email_summarizer.api.dependencies import get_exchange_client

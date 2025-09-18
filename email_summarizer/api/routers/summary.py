@@ -86,7 +86,6 @@ async def generate_summary_in_time_range(
     """
     try:
         # Convert string parameters to datetime objects
-        from datetime import datetime
         start_datetime = datetime.fromisoformat(start_time)
         end_datetime = datetime.fromisoformat(end_time)
         
