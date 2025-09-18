@@ -1,20 +1,20 @@
-from exchangelib import Credentials, Account, DELEGATE, Configuration, Message, EWSTimeZone, UTC
+from exchangelib import Credentials, Account, DELEGATE, Configuration, Message, EWSTimeZone, UTC, IMPERSONATION
 from email_summarizer.app.config import Config
 from datetime import datetime, timedelta
 from typing import List
 from markitdown import MarkItDown
 class ExchangeClient:
-    def __init__(self):
+    def __init__(self, target_email: str):
         creds = Credentials(
             username=Config.EXCHANGE_USERNAME,
             password=Config.EXCHANGE_PASSWORD
         )
         config = Configuration(server=Config.EXCHANGE_SERVER, credentials=creds)
         self.account = Account(
-            primary_smtp_address=Config.EXCHANGE_EMAIL,
+            primary_smtp_address=target_email,
             config=config,
             autodiscover=False,
-            access_type=DELEGATE
+            access_type=IMPERSONATION
         )
         # Use the account's default timezone if available, else UTC
         self.tz = getattr(self.account, 'default_timezone', UTC)
@@ -28,9 +28,19 @@ class ExchangeClient:
         if until is None:
             until = datetime.now(self.tz)
         if since.tzinfo is None:
-            since = self.tz.localize(since)
+            # Create a new datetime with the timezone information
+            since = datetime(
+                since.year, since.month, since.day,
+                since.hour, since.minute, since.second,
+                since.microsecond, tzinfo=self.tz
+            )
         if until.tzinfo is None:
-            until = self.tz.localize(until)
+            # Create a new datetime with the timezone information
+            until = datetime(
+                until.year, until.month, until.day,
+                until.hour, until.minute, until.second,
+                until.microsecond, tzinfo=self.tz
+            )
         inbox = self.account.inbox
         qs = inbox.filter(datetime_received__range=(since, until)).order_by('-datetime_received')
         emails = []
@@ -68,7 +78,7 @@ class ExchangeClient:
         Fetch emails received in the last 24 hours.
         """
         now = datetime.now(self.tz)
-        start = now - timedelta(hours=72)
+        start = now - timedelta(hours=24)
         return self.fetch_emails(since=start, until=now)
 
     def fetch_all_emails(self) -> List[dict]:
