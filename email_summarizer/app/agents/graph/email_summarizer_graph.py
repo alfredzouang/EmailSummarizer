@@ -45,35 +45,46 @@ class EmailSummarizerAgentsGraph:
         self.config = config
 
         self.debug = debug
-        provider = Config.LLM_PROVIDER.lower()
-        logger.info(f"🌐 [CONFIG] Using provider: {provider}")
+        deep_provider = Config.DEEP_THINK_PROVIDER.lower()
+        quick_provider = Config.QUICK_THINK_PROVIDER.lower()
+        logger.info(f"🌐 [CONFIG] Using deep_think provider: {deep_provider}, quick_think provider: {quick_provider}")
 
-         # Initialize LLMs
-        if provider == "azureopenai":
-            logger.info("🌐 [CONFIG] Initializing Azure OpenAI LLMs")
+        # Initialize LLM for deep_think
+        if deep_provider == "azureopenai":
+            logger.info("🌐 [CONFIG] Initializing Azure OpenAI for deep_thinking_llm")
             self.deep_thinking_llm = AzureChatOpenAI(
-                azure_deployment=self.config.get("deep_think_llm", Config.DEEP_THINK_LLM),
-                azure_endpoint=self.config.get("backend_url", Config.BACKEND_URL),
-                api_version=self.config.get("api_version", Config.API_VERSION),
-                api_key=Config.AZURE_OPENAI_API_KEY
+                azure_deployment=Config.DEEP_THINK_MODEL,
+                azure_endpoint=Config.DEEP_THINK_BACKEND_URL,
+                api_version=Config.DEEP_THINK_API_VERSION,
+                api_key=Config.DEEP_THINK_LLM_KEY,
+                temperature=Config.DEEP_THINK_TEMPERATURE,
             )
-            self.quick_thinking_llm = AzureChatOpenAI(
-                azure_deployment=self.config.get("quick_think_llm", Config.QUICK_THINK_LLM),
-                azure_endpoint=self.config.get("backend_url", Config.BACKEND_URL),
-                api_version=self.config.get("api_version", Config.API_VERSION),
-                api_key=Config.AZURE_OPENAI_API_KEY
-            )
-        elif provider in ("openai", "ollama", "openrouter"):
-            logger.info(f"🌐 [CONFIG] Initializing {provider} LLMs")
+        else:
+            logger.info(f"🌐 [CONFIG] Initializing {deep_provider} for deep_thinking_llm")
             self.deep_thinking_llm = ChatOpenAI(
-                model_name=self.config.get("deep_think_llm", Config.DEEP_THINK_LLM),
-                base_url=self.config.get("backend_url", Config.BACKEND_URL),
-                temperature=self.config.get("temperature", Config.TEMPERATURE),
+                model_name=Config.DEEP_THINK_MODEL,
+                base_url=Config.DEEP_THINK_BACKEND_URL,
+                temperature=Config.DEEP_THINK_TEMPERATURE,
+                api_key=Config.DEEP_THINK_LLM_KEY
             )
+
+        # Initialize LLM for quick_think
+        if quick_provider == "azureopenai":
+            logger.info("🌐 [CONFIG] Initializing Azure OpenAI for quick_thinking_llm")
+            self.quick_thinking_llm = AzureChatOpenAI(
+                azure_deployment=Config.QUICK_THINK_MODEL,
+                azure_endpoint=Config.QUICK_THINK_BACKEND_URL,
+                api_version=Config.QUICK_THINK_API_VERSION,
+                api_key=Config.QUICK_THINK_LLM_KEY,
+                temperature=Config.QUICK_THINK_TEMPERATURE
+            )
+        else:
+            logger.info(f"🌐 [CONFIG] Initializing {quick_provider} for quick_thinking_llm")
             self.quick_thinking_llm = ChatOpenAI(
-                model_name=self.config.get("quick_think_llm", Config.QUICK_THINK_LLM),
-                base_url=self.config.get("backend_url", Config.BACKEND_URL),
-                temperature=self.config.get("temperature", Config.TEMPERATURE),
+                model_name=Config.QUICK_THINK_MODEL,
+                base_url=Config.QUICK_THINK_BACKEND_URL,
+                temperature=Config.QUICK_THINK_TEMPERATURE,
+                api_key=Config.QUICK_THINK_LLM_KEY
             )
             
         # self.toolkit = Toolkit(config=self.config)
@@ -146,4 +157,3 @@ class EmailSummarizerAgentsGraph:
 
         self.curr_state = final_state
         return final_state
-

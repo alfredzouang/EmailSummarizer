@@ -47,7 +47,7 @@ class ConfigManager:
         """
         校验配置：无论 config.yml 是否存在，只校验 llm_provider、deep_think_llm、quick_think_llm、backend_url 四个字段必须存在
         """
-        required_keys = ["llm_provider", "deep_think_llm", "quick_think_llm", "backend_url"]
+        required_keys = ["deep_think_llm", "quick_think_llm"]
         missing = [k for k in required_keys if k not in config]
         if missing:
             raise ValueError(f"配置缺少必要字段: {missing}")

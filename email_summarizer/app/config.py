@@ -16,9 +16,10 @@ class Config:
     EXCHANGE_PASSWORD = os.getenv("EXCHANGE_PASSWORD")
     EXCHANGE_SERVER = os.getenv("EXCHANGE_SERVER")
 
-    # Azure OpenAI
-    AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
-    
+    # API Key    
+    DEEP_THINK_LLM_KEY = os.getenv("DEEP_THINK_LLM_KEY")
+    QUICK_THINK_LLM_KEY = os.getenv("QUICK_THINK_LLM_KEY")
+
     # Celery
     CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
     CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
@@ -32,13 +33,26 @@ class Config:
     LANGGRAPH_CONFIG = os.getenv("LANGGRAPH_CONFIG")
 
     # Agent/LLM/Tool config (from config_manager)
-    RESULTS_DIR = _agent_config.get("results_dir")
-    LLM_PROVIDER = _agent_config.get("llm_provider")
-    DEEP_THINK_LLM = _agent_config.get("deep_think_llm")
-    QUICK_THINK_LLM = _agent_config.get("quick_think_llm")
-    BACKEND_URL = _agent_config.get("backend_url")
-    API_VERSION = _agent_config.get("api_version", "2024-12-01-preview")
-    TEMPERATURE = _agent_config.get("temperature", 0.0)
+    RESULTS_DIR = _agent_config.get("results_dir", "./results")
+
+    DEEP_THINK_LLM_CONFIG = _agent_config.get("deep_think_llm", {})
+    QUICK_THINK_LLM_CONFIG = _agent_config.get("quick_think_llm", {})
+
+    DEEP_THINK_MODEL = DEEP_THINK_LLM_CONFIG.get("model", "o1")
+    QUICK_THINK_MODEL = QUICK_THINK_LLM_CONFIG.get("model", "gpt-4.1")
+
+    DEEP_THINK_API_VERSION = DEEP_THINK_LLM_CONFIG.get("api_version", "2024-12-01-preview")
+    QUICK_THINK_API_VERSION = QUICK_THINK_LLM_CONFIG.get("api_version", "2024-12-01-preview")
+
+    DEEP_THINK_BACKEND_URL = DEEP_THINK_LLM_CONFIG.get("backend_url", "https://tryaifoundry.openai.azure.com/")
+    QUICK_THINK_BACKEND_URL = QUICK_THINK_LLM_CONFIG.get("backend_url", "https://tryaifoundry.openai.azure.com/")
+
+    DEEP_THINK_PROVIDER = DEEP_THINK_LLM_CONFIG.get("llm_provider", "azureopenai")
+    QUICK_THINK_PROVIDER = QUICK_THINK_LLM_CONFIG.get("llm_provider", "azureopenai")
+
+    DEEP_THINK_TEMPERATURE = DEEP_THINK_LLM_CONFIG.get("temperature", 0.0)
+    QUICK_THINK_TEMPERATURE = QUICK_THINK_LLM_CONFIG.get("temperature", 0.0)
+
     ONLINE_TOOLS = _agent_config.get("online_tools", True)
 
     @classmethod
