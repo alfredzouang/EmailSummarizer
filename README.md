@@ -14,6 +14,7 @@
 ```
 email_summarizer/
 ├── app/
+|   ├── api/                   # rest api 接口
 │   ├── agents/                # 智能体体系核心
 │   │   ├── analysts/          # 各类分析师（如简报、状态、行动项）
 │   │   ├── graph/             # 智能体图结构、状态、传播、条件逻辑
@@ -43,6 +44,9 @@ email_summarizer/
 - 主界面生成并展示邮件摘要报告
 - 支持多分析师协作，自动调用 agents 层核心逻辑
 
+## API服务
+主入口为根目录下`run_api.py`，基于fastapi, uvicorn实现
+
 ## 安装与运行
 
 ### 环境要求
@@ -64,8 +68,11 @@ pip install uv
 
 ```bash
 uv pip install -r requirements.txt
-# 或直接使用 pyproject.toml/uv.lock
 uv pip install -r requirements.txt --use-uv
+# 或直接使用 pyproject.toml/uv.lock
+uv sync
+# 可更换镜像源
+uv sync --index-url <mirror_url>
 ```
 
 #### 常用 uv 命令
@@ -84,9 +91,15 @@ uv pip install -r requirements.txt --use-uv
 streamlit run email_summarizer/app/web/email_summarizer_web.py
 ```
 
+### 启动 API 服务
+```bash
+python run_api.py
+```
+启动api服务后，可使用`/docs`端点访问接口文档
+
 ### 邮箱配置
 
-请根据项目根目录下的 `email_summarizer/.env.example` 文件，复制为 `email_summarizer/.env` 并填写你自己的 Exchange 邮箱、Azure OpenAI、Celery 等相关环境变量。  
+请根据项目根目录下的 `email_summarizer/.env.example` 文件，复制为 `email_summarizer/.env` 并填写你自己的 Exchange 邮箱、API KEY、Celery 等相关环境变量。  
 **注意：请勿提交包含敏感信息的 .env 文件到版本库。**
 
 各字段说明及示例见 `.env.example`，如需详细配置可参考 [exchangelib 官方文档](https://ecederstrand.github.io/exchangelib/) 及 Azure OpenAI 文档。
